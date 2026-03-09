@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shipping & Handling – Edit Packing Dimensions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      background: #e8e8e8;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 48px 20px;
+    }
+
+    /* ─── Panel ─── */
+    .panel {
+      background: #fff;
+      width: 950px;
+      max-width: 100%;
+      border-radius: 8px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+      height: fit-content;
+    }
+
+    /* ─── Title ─── */
+    .panel-title {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: 400;
+      font-size: 26px;
+      line-height: 1.3;
+      color: #222;
+      letter-spacing: -0.01em;
+    }
+
+    /* ─── Section ─── */
+    .section { display: flex; flex-direction: column; gap: 9px; }
+    .section-label { font-size: 13px; font-weight: 600; color: #222; letter-spacing: 0.01em; }
+
+    /* ─── Listbox card ─── */
+    .listbox {
+      border: 1px solid #e0e0e0;
+      background: #fff;
+      padding: 13px 18px 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .listbox-info { display: flex; flex-direction: column; gap: 4px; }
+    .listbox-name { font-size: 14px; font-weight: 600; color: #222; line-height: 1.4; }
+    .listbox-sub  { font-size: 14px; font-weight: 300; color: #888; line-height: 1.4; }
+
+    /* ─── Pill button ─── */
+    .btn-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid #436b93;
+      border-radius: 999px;
+      background: transparent;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #436b93;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      flex-shrink: 0;
+      line-height: 1.4;
+      transition: background 0.15s;
+    }
+    .btn-pill:hover { background: #eef1f7; }
+
+    /* ─── Native select (Handling Time) ─── */
+    .select-wrap { position: relative; }
+    .select-field {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      background: #fff;
+      padding: 0 40px 0 18px;
+      font-size: 16px;
+      font-weight: 300;
+      color: #222;
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .select-field:focus { outline: 2px solid #436b93; outline-offset: -1px; }
+    .chevron {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* ─── Section break ─── */
+    .section-break hr { border: none; border-top: 1px solid #ddd; }
+
+    /* ─── Quotes heading + info ─── */
+    .quotes-heading { font-size: 18px; font-weight: 600; color: #222; line-height: 1.4; }
+    .info-box {
+      background: #eef1f7;
+      padding: 18px;
+      font-size: 14px;
+      font-weight: 300;
+      color: #222;
+      line-height: 1.65;
+    }
+
+    /* ─── Two-column ─── */
+    .two-col { display: flex; gap: 36px; align-items: flex-start; }
+    .col-left { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+
+    /* ─── Steps ─── */
+    .step-block { padding-bottom: 18px; }
+    .step-eyebrow { font-size: 12px; font-weight: 300; color: #666; letter-spacing: 0.05em; margin-bottom: 9px; }
+    .step-question { font-size: 14px; font-weight: 600; color: #222; line-height: 1.5; }
+    .step-line { border: none; border-top: 1px solid #ddd; }
+
+    /* ─── Radio options ─── */
+    .radio-row { display: flex; gap: 9px; margin-top: 18px; }
+    .radio-opt {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 18px;
+      border: 1px solid #ddd; border-radius: 5px;
+      cursor: pointer; font-size: 14px; font-weight: 300; color: #222;
+      user-select: none; transition: background 0.1s;
+    }
+    .radio-opt.active { background: #eef1f7; }
+    .radio-circle {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid #ddd;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: border-color 0.1s;
+    }
+    .radio-opt.active .radio-circle { border-color: #436b93; }
+    .radio-dot { width: 10px; height: 10px; border-radius: 50%; background: #436b93; display: none; }
+    .radio-opt.active .radio-dot { display: block; }
+
+    /* ─── Package container – NO overflow:hidden so dropdown can escape ─── */
+    .package-wrap {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      /* overflow intentionally omitted */
+    }
+    .package-header-bar {
+      background: #f3f3f3;
+      border-bottom: 1px solid #ddd;
+      border-radius: 5px 5px 0 0;
+      padding: 9px 18px;
+      font-size: 14px; font-weight: 600; color: #666;
+    }
+    .package-body { padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+
+    /* ─── Dimension inputs ─── */
+    .dim-row { display: flex; gap: 9px; }
+    .field-col { display: flex; flex-direction: column; gap: 9px; flex: 1; }
+    .field-label-sm { font-size: 14px; font-weight: 600; color: #666; }
+    .input-suffix-wrap { position: relative; }
+    .dim-input {
+      width: 100%; height: 40px;
+      border: 1px solid #ddd; border-radius: 5px;
+      background: #fff;
+      padding: 14px 32px 14px 18px;
+      font-size: 16px; font-weight: 300; color: #666;
+      font-family: inherit; appearance: textfield;
+      transition: border-color 0.15s;
+    }
+    .dim-input::-webkit-outer-spin-button,
+    .dim-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .dim-input:focus { outline: 2px solid #436b93; outline-offset: -1px; color: #222; }
+    .dim-input.filled { color: #222; border-color: #aaa; }
+    .suffix {
+      position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; font-weight: 300; color: #666; pointer-events: none;
+    }
+    .weight-row { display: flex; flex-direction: column; gap: 9px; max-width: 240px; }
+
+    /* ─── Saved package – custom dropdown ─── */
+    .saved-pkg { padding-top: 27px; display: flex; flex-direction: column; gap: 9px; }
+    .saved-label { font-size: 14px; font-weight: 600; color: #666; }
+
+    .custom-dd { position: relative; user-select: none; }
+    .custom-dd__trigger {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 40px;
+      border: 1px solid #ddd; border-radius: 5px;
+      background: #fff; padding: 0 18px; cursor: pointer; gap: 9px;
+      transition: border-color 0.15s;
+    }
+    .custom-dd.open .custom-dd__trigger {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom-color: transparent;
+    }
+    .custom-dd__trigger:hover { border-color: #aaa; }
+    .custom-dd__value {
+      flex: 1; font-size: 14px; font-weight: 300; color: #222;
+      overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    }
+    .custom-dd__icons { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .custom-dd__clear {
+      display: none;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #888; color: #fff;
+      align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .custom-dd.has-value .custom-dd__clear { display: flex; }
+    .custom-dd__clear:hover { background: #555; }
+    .custom-dd__chevron { transition: transform 0.2s; flex-shrink: 0; }
+    .custom-dd.open .custom-dd__chevron { transform: rotate(180deg); }
+
+    /* Dropdown list floats outside any clipping parent */
+    .custom-dd__list {
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+      background: #fff;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .custom-dd.open .custom-dd__list { display: block; }
+    .custom-dd__item {
+      padding: 9px 18px;
+      font-size: 14px; font-weight: 300; color: #222;
+      cursor: pointer; line-height: 1.5;
+      border-top: 1px solid #eee;
+    }
+    .custom-dd__item:first-child { border-top: none; }
+    .custom-dd__item:hover { background: #f5f5f5; }
+    .custom-dd__item.selected { font-weight: 600; }
+
+    /* ─── Help link ─── */
+    .help-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 18px 18px 18px 18px;
+    }
+    .help-icon {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1.5px solid #436b93;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #436b93; flex-shrink: 0;
+    }
+    .help-link {
+      font-size: 14px; font-weight: 600; color: #436b93;
+      text-decoration: none; cursor: pointer;
+    }
+    .help-link:hover { text-decoration: underline; }
+
+    /* ─── Add another package ─── */
+    .add-pkg-btn {
+      border: 1px dashed #ddd; border-radius: 5px;
+      background: transparent; padding: 9px;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      cursor: pointer; font-family: inherit;
+      font-size: 16px; line-height: 1.5; font-weight: 600; color: #666;
+      width: 100%; margin-top: 18px;
+      transition: background 0.15s;
+    }
+    .add-pkg-btn:hover { background: #f5f5f5; }
+
+    /* ─── Right column wrapper (Frame 625) – plain, no border/bg ─── */
+    .col-right {
+      width: 320px; flex-shrink: 0;
+      display: flex; flex-direction: column;
+    }
+
+    /* ─── Smart Quotes card (Frame 27107) ─── */
+    .sq-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 18px 27px;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+
+    /* ─── Shared header bits ─── */
+    .sq-header { display: flex; flex-direction: column; gap: 9px; }
+    .sq-title-row { display: flex; align-items: center; gap: 8px; }
+    .sq-title { font-size: 16px; font-weight: 600; color: #666; }
+    .sq-sub  { font-size: 14px; font-weight: 300; color: #666; line-height: 1.65; }
+    .sq-badge {
+      background: #eef1f7; border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 12px; font-weight: 400; color: #436b93;
+      white-space: nowrap; line-height: 1.5;
+    }
+    .sq-divider { border: none; border-top: 1px solid #ddd; margin: 0; }
+
+    /* ─── Lock body ─── */
+    .sq-lock-body {
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      padding: 18px 0 18px;
+    }
+    .lock-circle {
+      width: 45px; height: 45px; border-radius: 50%;
+      background: #f3f3f3;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sq-lock-text { font-size: 14px; font-weight: 300; color: #888; text-align: center; line-height: 1.65; }
+
+    /* ─── Quotes generated state ─── */
+    /* The card itself is shown/hidden; regions live inside it */
+    .sq-regions { display: flex; flex-direction: column; margin: 0 -27px; }
+
+    .sq-region {
+      padding: 18px 27px;
+      display: flex; flex-direction: column; gap: 9px;
+      border-top: 1px solid #ddd;
+    }
+    .sq-region:first-child { border-top: none; padding-top: 0; }
+
+    .sq-region-header { display: flex; align-items: center; gap: 9px; }
+    .sq-region-name { font-size: 14px; font-weight: 400; color: #666; }
+
+    .sq-field { display: flex; flex-direction: column; gap: 2px; }
+    .sq-field-label { font-size: 12px; font-weight: 300; color: #888; line-height: 1.5; }
+    .sq-field-value { font-size: 14px; font-weight: 400; color: #222; line-height: 1.5; }
+    .sq-price { font-size: 16px; font-weight: 600; color: #222; line-height: 1.4; }
+
+    .sq-add-delivery {
+      font-size: 14px; font-weight: 400; color: #436b93;
+      cursor: pointer; text-decoration: none; margin-top: 4px;
+    }
+    .sq-add-delivery:hover { text-decoration: underline; }
+
+    /* ─── Add Your Own Quote – separate container below Smart Quotes card ─── */
+    .add-quote-wrap {
+      margin-top: 18px;
+      display: none; /* shown only when quotes generated */
+    }
+    .add-quote-btn {
+      border: 1px dashed #ddd; border-radius: 5px;
+      background: transparent; padding: 9px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      cursor: pointer; font-family: inherit;
+      font-size: 16px; line-height: 1.5; font-weight: 600; color: #666;
+      width: 100%;
+      transition: background 0.15s;
+    }
+    .add-quote-btn:hover { background: #f5f5f5; }
+
+    /* ─── Loading dots animation ─── */
+    @keyframes dot-bounce {
+      0%, 80%, 100% { opacity: 0.2; transform: translateY(0); }
+      40%           { opacity: 1;   transform: translateY(-4px); }
+    }
+    .sq-dots {
+      display: none;
+      align-items: center;
+      gap: 3px;
+      height: 20px;
+    }
+    .sq-dots .dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #aaa;
+      animation: dot-bounce 1.2s infinite ease-in-out;
+      display: inline-block;
+    }
+    .sq-dots .dot:nth-child(2) { animation-delay: 0.2s; }
+    .sq-dots .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    /* Loading state: hide values, show dots; add-quote-wrap handled in JS */
+    .is-loading .sq-field-value,
+    .is-loading .sq-price        { display: none; }
+    .is-loading .sq-dots         { display: inline-flex; }
+    .is-loading .sq-add-delivery { visibility: hidden; }
+
+    svg { display: block; }
+
+    /* ════════════════════════════════════════
+       MODAL SHARED
+    ════════════════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-card {
+      background: #fff;
+      border-radius: 5px;
+      width: 540px;
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 64px);
+      overflow-y: auto;
+      display: flex; flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: center;
+      padding: 18px 47px;
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
+    }
+    .modal-title {
+      text-align: center;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      font-weight: 400;
+      font-size: 18px; line-height: 1.5; color: #222;
+    }
+    .modal-close {
+      position: absolute; top: 14px; right: 14px;
+      background: none; border: none; cursor: pointer;
+      padding: 4px; display: flex; align-items: center; justify-content: center;
+      color: #222;
+    }
+    .modal-close:hover { opacity: 0.6; }
+
+    .modal-body { padding: 0; display: flex; flex-direction: column; }
+
+    .modal-field {
+      padding: 18px 36px 0;
+      display: flex; flex-direction: column; gap: 9px;
+    }
+    .modal-field:last-of-type { padding-bottom: 36px; }
+
+    .modal-label {
+      font-size: 14px; font-weight: 600; color: #222; line-height: 1.5;
+    }
+
+    .modal-input {
+      width: 100%; height: 40px;
+      border: 1px solid #e0e0e0; border-radius: 5px;
+      background: #fff;
+      padding: 0 40px 0 18px;
+      font-size: 14px; font-weight: 300; color: #222;
+      font-family: inherit; appearance: none; -webkit-appearance: none;
+    }
+    .modal-input:focus { outline: 2px solid #436b93; outline-offset: -1px; }
+
+    /* Shipping time row */
+    .modal-time-row {
+      display: flex; align-items: center; gap: 18px;
+    }
+    .modal-time-input {
+      flex: 1; height: 40px;
+      border: 1px solid #e0e0e0; border-radius: 5px;
+      background: #fff;
+      padding: 0 18px;
+      font-size: 14px; font-weight: 300; color: #222;
+      font-family: inherit;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-time-input input {
+      border: none; outline: none; background: transparent;
+      font-family: inherit; font-size: 14px; font-weight: 300; color: #222;
+      width: 60px;
+    }
+    .modal-time-suffix { font-size: 14px; font-weight: 300; color: #666; }
+    .modal-time-sep { font-size: 14px; color: #222; flex-shrink: 0; }
+
+    /* Buyers will pay */
+    .modal-pay-wrap {
+      height: 40px;
+      border: 1px solid #e0e0e0; border-radius: 5px;
+      background: #fff;
+      padding: 0 18px;
+      display: flex; align-items: center; gap: 9px;
+    }
+    .modal-pay-prefix { font-size: 14px; font-weight: 300; color: #666; flex-shrink: 0; }
+    .modal-pay-input {
+      flex: 1; border: none; outline: none; background: transparent;
+      font-family: inherit; font-size: 14px; font-weight: 300; color: #222;
+    }
+    .modal-pay-suffix { font-size: 14px; font-weight: 300; color: #666; flex-shrink: 0; }
+    .modal-hint { font-size: 14px; font-weight: 300; color: #000; line-height: 1.5; }
+
+    /* Footer */
+    .modal-footer {
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 0 36px 36px;
+      flex-shrink: 0;
+    }
+    .modal-footer.has-delete { justify-content: space-between; }
+    .modal-cta-group { display: flex; align-items: center; gap: 18px; }
+
+    .modal-btn-cancel {
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: 16px; font-weight: 600; color: #436b93;
+      padding: 9px; border-radius: 999px;
+    }
+    .modal-btn-cancel:hover { background: #eef1f7; }
+
+    .modal-btn-primary {
+      border: 2px solid #436b93; border-radius: 999px;
+      background: transparent; cursor: pointer;
+      font-family: inherit; font-size: 16px; font-weight: 600; color: #436b93;
+      padding: 9px 36px;
+    }
+    .modal-btn-primary:hover:not(:disabled) { background: #eef1f7; }
+    .modal-btn-primary:disabled { opacity: 0.35; cursor: default; border-color: #888; color: #888; }
+
+    .modal-btn-delete {
+      display: flex; align-items: center; gap: 8px;
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: 14px; font-weight: 600; color: #222;
+      padding: 9px;
+    }
+    .modal-btn-delete:hover { color: #c00; }
+
+    /* Modal custom dropdown (matches saved-package style) */
+    .modal-dd {
+      position: relative; user-select: none;
+    }
+    .modal-dd__trigger {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 40px;
+      border: 1px solid #ddd; border-radius: 5px;
+      background: #fff; padding: 0 18px; cursor: pointer; gap: 9px;
+      transition: border-color 0.15s;
+    }
+    .modal-dd.open .modal-dd__trigger {
+      border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+      border-bottom-color: transparent;
+    }
+    .modal-dd__trigger:hover { border-color: #aaa; }
+    .modal-dd__value {
+      flex: 1; font-size: 14px; font-weight: 300; color: #222;
+      overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    }
+    .modal-dd__value.placeholder { color: #aaa; }
+    .modal-dd__chevron { transition: transform 0.2s; flex-shrink: 0; }
+    .modal-dd.open .modal-dd__chevron { transform: rotate(180deg); }
+    .modal-dd__list {
+      position: absolute; top: 100%; left: 0; right: 0;
+      border: 1px solid #ddd; border-top: none;
+      border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;
+      background: #fff; z-index: 300;
+      display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .modal-dd.open .modal-dd__list { display: block; }
+    .modal-dd__item {
+      padding: 9px 18px;
+      font-size: 14px; font-weight: 300; color: #222;
+      cursor: pointer; line-height: 1.5;
+      border-top: 1px solid #eee;
+    }
+    .modal-dd__item:first-child { border-top: none; }
+    .modal-dd__item:hover { background: #f5f5f5; }
+    .modal-dd__item.selected { font-weight: 600; }
+
+    /* ── Calculate Dimensions modal specifics ── */
+    .modal-info-box {
+      background: #fbfbfb; border-radius: 5px;
+      padding: 18px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .modal-info-label {
+      font-size: 11px; font-weight: 600; color: #666;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .modal-info-dims {
+      display: flex; gap: 18px;
+    }
+    .modal-info-dim { display: flex; flex-direction: column; gap: 2px; }
+    .modal-info-dim-label { font-size: 14px; font-weight: 400; color: #222; }
+    .modal-info-dim-val   { font-size: 16px; font-weight: 600; color: #222; }
+
+    .modal-dim-row { display: flex; gap: 9px; }
+    .modal-dim-field { display: flex; flex-direction: column; gap: 9px; flex: 1; }
+    .modal-dim-label { font-size: 14px; font-weight: 600; color: #666; }
+    .modal-dim-input-wrap { position: relative; }
+    .modal-dim-input {
+      width: 100%; height: 40px;
+      border: 1px solid #ddd; border-radius: 5px; background: #fff;
+      padding: 14px 32px 14px 18px;
+      font-size: 16px; font-weight: 300; color: #666;
+      font-family: inherit; appearance: textfield;
+    }
+    .modal-dim-input::-webkit-outer-spin-button,
+    .modal-dim-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .modal-dim-input:focus { outline: 2px solid #436b93; outline-offset: -1px; color: #222; }
+    .modal-dim-suffix {
+      position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; font-weight: 300; color: #666; pointer-events: none;
+    }
+    .modal-weight-field { display: flex; flex-direction: column; gap: 9px; }
+
+    .modal-warn-box {
+      background: #fff4e0; padding: 18px;
+      display: flex; flex-direction: column; gap: 8px;
+      border-radius: 0;
+    }
+    .modal-warn-text { font-size: 14px; font-weight: 300; color: #222; line-height: 1.6; }
+    .modal-checkbox-row { display: flex; align-items: flex-start; gap: 18px; }
+    .modal-checkbox-box {
+      width: 20px; height: 20px; flex-shrink: 0;
+      background: #436b93; border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .modal-checkbox-text { font-size: 14px; font-weight: 300; color: #222; line-height: 1.6; }
+
+    /* ── Custom User Quote Card ── */
+    /* Reuses .sq-card + .sq-regions; only adds meatball menu */
+    .cq-title-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cq-badge-yellow {
+      background: #fff4e0; border-radius: 999px;
+      padding: 2px 9px;
+      font-size: 12px; font-weight: 400; color: #9a6700;
+      white-space: nowrap; line-height: 1.5;
+    }
+    .cq-meatball {
+      margin-left: auto; position: relative;
+    }
+    .cq-meatball-trigger {
+      background: none; border: none; cursor: pointer;
+      padding: 4px 6px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cq-meatball-trigger:hover { background: #f5f5f5; }
+    .cq-meatball-menu {
+      display: none;
+      position: absolute; right: 0; top: calc(100% + 4px);
+      background: #fff; border: 1px solid #ddd; border-radius: 5px;
+      min-width: 120px; z-index: 50;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .cq-meatball.open .cq-meatball-menu { display: block; }
+    .cq-meatball-item {
+      padding: 10px 14px;
+      font-size: 14px; font-weight: 400; color: #222;
+      cursor: pointer; white-space: nowrap;
+    }
+    .cq-meatball-item:hover { background: #f5f5f5; }
+    .cq-meatball-item--danger { color: #c00; }
+  </style>
+</head>
+<body>
+<div class="panel">
+
+  <!-- Title -->
+  <h1 class="panel-title">Shipping &amp; Handling</h1>
+
+  <!-- ── Inventory Location ── -->
+  <div class="section">
+    <span class="section-label">Inventory Location</span>
+    <div class="listbox">
+      <div class="listbox-info">
+        <span class="listbox-name">Seller Storefront (Default)</span>
+        <span class="listbox-sub">383 North Indian Canyon Drive Palm Springs CA 92262</span>
+        <span class="listbox-sub">James &ndash; +61739928983&nbsp;&nbsp;info@gmail.com</span>
+      </div>
+      <button class="btn-pill">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="9.5" stroke="#436b93"/>
+          <line x1="10" y1="5.5" x2="10" y2="14.5" stroke="#436b93" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="5.5" y1="10" x2="14.5" y2="10" stroke="#436b93" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        Change Location
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Handling Time ── -->
+  <div class="section">
+    <span class="section-label">Handling Time</span>
+    <div class="select-wrap">
+      <select class="select-field">
+        <option>3 Business Days</option>
+        <option>1 Business Day</option>
+        <option>2 Business Days</option>
+        <option>5 Business Days</option>
+        <option>7 Business Days</option>
+      </select>
+      <svg class="chevron" width="14" height="8" viewBox="0 0 14 8" fill="none">
+        <path d="M1 1L7 7L13 1" stroke="#222" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── Return Policy ── -->
+  <div class="section">
+    <span class="section-label">Return Policy</span>
+    <div class="listbox">
+      <div class="listbox-info">
+        <span class="listbox-name">All Sales Final</span>
+        <span class="listbox-sub">Accepts Returns (3 days)&nbsp;&nbsp;|&nbsp;&nbsp;Buyers pays return shipping</span>
+      </div>
+      <button class="btn-pill">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="9.5" stroke="#436b93"/>
+          <line x1="10" y1="5.5" x2="10" y2="14.5" stroke="#436b93" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="5.5" y1="10" x2="14.5" y2="10" stroke="#436b93" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        Change Policy
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Section break ── -->
+  <div class="section-break"><hr /></div>
+
+  <!-- ── Packing & Shipping Quotes ── -->
+  <div class="section" style="gap:9px;">
+    <span class="quotes-heading">Packing and Shipping Quotes</span>
+    <div class="info-box">
+      1stDibs will automatically generate Smart Quotes for Continental US, Continental Europe and Rest of the World from your package details. You can also add your own quote at any time if you prefer.
+    </div>
+  </div>
+
+  <!-- ── Two-column ── -->
+  <div class="two-col">
+
+    <!-- Left: Steps -->
+    <div class="col-left">
+
+      <!-- Step 1 -->
+      <div class="step-block">
+        <p class="step-eyebrow">STEP 1</p>
+        <p class="step-question">Are you able to pack the item yourself?</p>
+        <div class="radio-row">
+          <div class="radio-opt active" id="opt-yes" onclick="selectRadio('yes')">
+            <div class="radio-circle"><div class="radio-dot"></div></div>
+            Yes
+          </div>
+          <div class="radio-opt" id="opt-no" onclick="selectRadio('no')">
+            <div class="radio-circle"><div class="radio-dot"></div></div>
+            No
+          </div>
+        </div>
+      </div>
+
+      <hr class="step-line" />
+
+      <!-- Step 2 -->
+      <div class="step-block" style="padding-top:18px;">
+        <p class="step-eyebrow">STEP 2</p>
+        <p class="step-question">Enter the dimensions of your packed item(s).</p>
+      </div>
+
+      <!-- Package 1 -->
+      <div class="package-wrap">
+        <div class="package-header-bar">Package 1</div>
+        <div class="package-body">
+
+          <!-- L / W / H -->
+          <div class="dim-row">
+            <div class="field-col">
+              <span class="field-label-sm">Length</span>
+              <div class="input-suffix-wrap">
+                <input type="number" class="dim-input" id="inp-l" value="0" min="0" oninput="onDimInput(this)" />
+                <span class="suffix">in</span>
+              </div>
+            </div>
+            <div class="field-col">
+              <span class="field-label-sm">Width</span>
+              <div class="input-suffix-wrap">
+                <input type="number" class="dim-input" id="inp-w" value="0" min="0" oninput="onDimInput(this)" />
+                <span class="suffix">in</span>
+              </div>
+            </div>
+            <div class="field-col">
+              <span class="field-label-sm">Height</span>
+              <div class="input-suffix-wrap">
+                <input type="number" class="dim-input" id="inp-h" value="0" min="0" oninput="onDimInput(this)" />
+                <span class="suffix">in</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weight -->
+          <div class="weight-row">
+            <span class="field-label-sm">Weight</span>
+            <div class="input-suffix-wrap">
+              <input type="number" class="dim-input" id="inp-wt" value="0" min="0" oninput="onDimInput(this)" />
+              <span class="suffix">lbs</span>
+            </div>
+          </div>
+
+          <!-- Saved package – custom dropdown -->
+          <div class="saved-pkg">
+            <span class="saved-label">Or Use a Saved Package</span>
+            <div class="custom-dd" id="savedPkgDd">
+              <div class="custom-dd__trigger" onclick="toggleDd(event)">
+                <span class="custom-dd__value" id="savedPkgValue"></span>
+                <div class="custom-dd__icons">
+                  <span class="custom-dd__clear" id="savedPkgClear" onclick="clearDd(event)">
+                    <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                      <line x1="1" y1="1" x2="7" y2="7" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+                      <line x1="7" y1="1" x2="1" y2="7" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <svg class="custom-dd__chevron" width="14" height="8" viewBox="0 0 14 8" fill="none">
+                    <path d="M1 1L7 7L13 1" stroke="#222" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="custom-dd__list">
+                <div class="custom-dd__item" onclick="selectDd('Small (30 x 10 x 20 cm - 5 kg)', this)">Small (30 x 10 x 20 cm - 5 kg)</div>
+                <div class="custom-dd__item" onclick="selectDd('Medium (46 x 46 x 46 cm - 11 kg)', this)">Medium (46 x 46 x 46 cm - 11 kg)</div>
+                <div class="custom-dd__item" onclick="selectDd('Large (71 x 71 x 71 cm - 32 kg)', this)">Large (71 x 71 x 71 cm - 32 kg)</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /package-body -->
+
+        <div class="help-row">
+          <div class="help-icon">?</div>
+          <a class="help-link" href="#" onclick="openCalcModal(); return false;">I don't know my package dimensions</a>
+        </div>
+      </div><!-- /package-wrap -->
+
+      <!-- Package 2 (hidden until Add Another Package clicked) -->
+      <div class="package-wrap" id="pkg2Wrap" style="display:none; margin-top:18px;">
+        <div class="package-header-bar" style="display:flex; align-items:center; justify-content:space-between;">
+          <span>Package 2</span>
+          <button onclick="removePackage()" style="background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;" title="Remove Package 2">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <line x1="1" y1="1" x2="15" y2="15" stroke="#222" stroke-width="1.5" stroke-linecap="round"/>
+              <line x1="15" y1="1" x2="1" y2="15" stroke="#222" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="package-body">
+          <div class="dim-row">
+            <div class="field-col">
+              <span class="field-label-sm">Length</span>
+              <div class="input-suffix-wrap">
+                <input type="number" class="dim-input" id="inp-l2" value="0" min="0" oninput="onDimInput(this)" />
+                <span class="suffix">in</span>
+              </div>
+            </div>
+            <div class="field-col">
+              <span class="field-label-sm">Width</span>
+              <div class="input-suffix-wrap">
+                <input type="number" class="dim-input" id="inp-w2" value="0" min="0" oninput="onDimInput(this)" />
+                <span class="suffix">in</span>
+              </div>
+            </div>
+            <div class="field-col">
+              <span class="field-label-sm">Height</span>
+              <div class="input-suffix-wrap">
+                <input type="number" class="dim-input" id="inp-h2" value="0" min="0" oninput="onDimInput(this)" />
+                <span class="suffix">in</span>
+              </div>
+            </div>
+          </div>
+          <div class="weight-row">
+            <span class="field-label-sm">Weight</span>
+            <div class="input-suffix-wrap">
+              <input type="number" class="dim-input" id="inp-wt2" value="0" min="0" oninput="onDimInput(this)" />
+              <span class="suffix">lbs</span>
+            </div>
+          </div>
+          <div class="saved-pkg">
+            <span class="saved-label">Or Use a Saved Package</span>
+            <div class="custom-dd" id="savedPkgDd2">
+              <div class="custom-dd__trigger" onclick="toggleDd(event)">
+                <span class="custom-dd__value" id="savedPkgValue2"></span>
+                <div class="custom-dd__icons">
+                  <span class="custom-dd__clear" onclick="clearDd(event)">
+                    <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
+                      <line x1="1" y1="1" x2="7" y2="7" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+                      <line x1="7" y1="1" x2="1" y2="7" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <svg class="custom-dd__chevron" width="14" height="8" viewBox="0 0 14 8" fill="none">
+                    <path d="M1 1L7 7L13 1" stroke="#222" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="custom-dd__list">
+                <div class="custom-dd__item" onclick="selectDd('Small (30 x 10 x 20 cm - 5 kg)', this)">Small (30 x 10 x 20 cm - 5 kg)</div>
+                <div class="custom-dd__item" onclick="selectDd('Medium (46 x 46 x 46 cm - 11 kg)', this)">Medium (46 x 46 x 46 cm - 11 kg)</div>
+                <div class="custom-dd__item" onclick="selectDd('Large (71 x 71 x 71 cm - 32 kg)', this)">Large (71 x 71 x 71 cm - 32 kg)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="help-row">
+          <div class="help-icon">?</div>
+          <a class="help-link" href="#" onclick="openCalcModal(); return false;">I don't know my package dimensions</a>
+        </div>
+      </div><!-- /pkg2Wrap -->
+
+      <button class="add-pkg-btn" id="addPkgBtn" onclick="addPackage()">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="9.5" stroke="#666"/>
+          <line x1="10" y1="5.5" x2="10" y2="14.5" stroke="#666" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="5.5" y1="10" x2="14.5" y2="10" stroke="#666" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        Add Another Package
+      </button>
+
+    </div><!-- /col-left -->
+
+    <!-- ── Right column (Frame 625 equivalent – plain wrapper) ── -->
+    <div class="col-right">
+
+      <!-- Lock state: Smart Quotes card alone (default) -->
+      <div class="sq-card" id="lockPanel">
+        <div class="sq-header">
+          <span class="sq-title">1stDibs Smart Quotes</span>
+          <span class="sq-sub">Quotes will be generated automatically once package details are entered.</span>
+        </div>
+        <hr class="sq-divider" />
+        <div class="sq-lock-body">
+          <div class="lock-circle">
+            <svg width="22" height="26" viewBox="0 0 22 26" fill="none">
+              <rect x="1.5" y="11.5" width="19" height="13" rx="2" stroke="#888" stroke-width="1.4"/>
+              <path d="M5 11.5V7.5a6 6 0 0 1 12 0v4" stroke="#888" stroke-width="1.4" stroke-linecap="round"/>
+              <circle cx="11" cy="18" r="1.8" fill="#888"/>
+              <line x1="11" y1="19.8" x2="11" y2="22.5" stroke="#888" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <p class="sq-lock-text">Complete Steps 1 and 2 to generate shipping quotes or add your own.</p>
+        </div>
+      </div>
+
+      <!-- Quotes state: Smart Quotes card with regions (hidden until dims filled) -->
+      <div class="sq-card" id="quotesPanel" style="display:none;">
+        <div class="sq-header">
+          <div class="sq-title-row">
+            <span class="sq-title">1stDibs Smart Quotes</span>
+            <span class="sq-badge">Default</span>
+          </div>
+          <span class="sq-sub">Quotes are generated automatically once package details are saved.</span>
+        </div>
+        <hr class="sq-divider" />
+        <div class="sq-regions">
+
+          <!-- Continental United States -->
+          <div class="sq-region">
+            <div class="sq-region-header">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="9" r="7.5" stroke="#666" stroke-width="1.5"/>
+                <ellipse cx="9" cy="9" rx="3.5" ry="7.5" stroke="#666" stroke-width="1.5"/>
+                <line x1="1.5" y1="9" x2="16.5" y2="9" stroke="#666" stroke-width="1.5"/>
+              </svg>
+              <span class="sq-region-name">Continental United States</span>
+            </div>
+            <div class="sq-field">
+              <span class="sq-field-label">Shipping Method</span>
+              <span class="sq-field-value">Front Door Delivery</span>
+              <span class="sq-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+            </div>
+            <div class="sq-field">
+              <span class="sq-field-label">Buyer Will Pay</span>
+              <span class="sq-price">$432.00 - $600.00</span>
+              <span class="sq-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+            </div>
+            <a class="sq-add-delivery" href="#">+ Add In-Home Delivery</a>
+          </div>
+
+          <!-- Europe -->
+          <div class="sq-region">
+            <div class="sq-region-header">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="9" r="7.5" stroke="#666" stroke-width="1.5"/>
+                <ellipse cx="9" cy="9" rx="3.5" ry="7.5" stroke="#666" stroke-width="1.5"/>
+                <line x1="1.5" y1="9" x2="16.5" y2="9" stroke="#666" stroke-width="1.5"/>
+              </svg>
+              <span class="sq-region-name">Europe</span>
+            </div>
+            <div class="sq-field">
+              <span class="sq-field-label">Shipping Method</span>
+              <span class="sq-field-value">Front Door Delivery</span>
+              <span class="sq-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+            </div>
+            <div class="sq-field">
+              <span class="sq-field-label">Buyer Will Pay</span>
+              <span class="sq-price">$432.00 - $600.00</span>
+              <span class="sq-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+            </div>
+            <a class="sq-add-delivery" href="#">+ Add In-Home Delivery</a>
+          </div>
+
+          <!-- Rest of the World -->
+          <div class="sq-region">
+            <div class="sq-region-header">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="9" r="7.5" stroke="#666" stroke-width="1.5"/>
+                <ellipse cx="9" cy="9" rx="3.5" ry="7.5" stroke="#666" stroke-width="1.5"/>
+                <line x1="1.5" y1="9" x2="16.5" y2="9" stroke="#666" stroke-width="1.5"/>
+              </svg>
+              <span class="sq-region-name">Rest of the World</span>
+            </div>
+            <div class="sq-field">
+              <span class="sq-field-label">Shipping Method</span>
+              <span class="sq-field-value">Front Door Delivery</span>
+              <span class="sq-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+            </div>
+            <div class="sq-field">
+              <span class="sq-field-label">Buyer Will Pay</span>
+              <span class="sq-price">$432.00 - $600.00</span>
+              <span class="sq-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+            </div>
+            <a class="sq-add-delivery" href="#">+ Add In-Home Delivery</a>
+          </div>
+
+        </div><!-- /sq-regions -->
+      </div><!-- /#quotesPanel -->
+
+      <!-- Error state: both packages fully filled (hidden until triggered) -->
+      <div class="sq-card" id="errorPanel" style="display:none; background:#fbfbfb; border-color:#ddd;">
+        <div class="sq-header">
+          <span class="sq-title">1stDibs Smart Quotes</span>
+          <span class="sq-sub">Quotes will be generated automatically once package details are entered.</span>
+        </div>
+        <hr class="sq-divider" />
+        <div class="sq-lock-body">
+          <div class="lock-circle">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="#888" stroke-width="1.5"/>
+              <line x1="12" y1="7" x2="12" y2="14" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="17.5" r="1.25" fill="#888"/>
+            </svg>
+          </div>
+          <p class="sq-lock-text" style="color:#666; text-align:center;">
+            We weren't able to generate a quote based on your packing specifications.<br><br>
+            You can request a quote from 1stDibs for a specific customer or order later. You also have the option of quoting and facilitating your own shipping.
+          </p>
+        </div>
+      </div><!-- /#errorPanel -->
+
+      <!-- Add Your Own Quote – separate container (Frame 27099), only shown with quotes -->
+      <div class="add-quote-wrap" id="addQuoteWrap">
+
+        <!-- Saved user quote card (shown after saving a custom quote) -->
+        <div class="sq-card" id="customQuoteCard" style="display:none; margin-bottom:18px;">
+          <div class="sq-regions">
+            <div class="sq-region" style="border-top:none; padding-top:0;">
+              <div class="sq-region-header" style="justify-content:flex-start;">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <circle cx="9" cy="9" r="7.5" stroke="#666" stroke-width="1.5"/>
+                  <ellipse cx="9" cy="9" rx="3.5" ry="7.5" stroke="#666" stroke-width="1.5"/>
+                  <line x1="1.5" y1="9" x2="16.5" y2="9" stroke="#666" stroke-width="1.5"/>
+                </svg>
+                <span class="sq-region-name" id="cq-location"></span>
+                <span class="cq-badge-yellow">Your Quote</span>
+                <div class="cq-meatball" id="cqMeatball" style="margin-left:auto;">
+                  <button class="cq-meatball-trigger" onclick="toggleMeatball(event)">
+                    <svg width="18" height="4" viewBox="0 0 18 4" fill="none">
+                      <circle cx="2"  cy="2" r="1.8" fill="#888"/>
+                      <circle cx="9"  cy="2" r="1.8" fill="#888"/>
+                      <circle cx="16" cy="2" r="1.8" fill="#888"/>
+                    </svg>
+                  </button>
+                  <div class="cq-meatball-menu" id="cqMeatballMenu">
+                    <div class="cq-meatball-item" onclick="openAqModal('edit'); closeMeatball()">Edit</div>
+                    <div class="cq-meatball-item cq-meatball-item--danger" onclick="deleteQuote()">Delete</div>
+                  </div>
+                </div>
+              </div>
+              <div class="sq-field">
+                <span class="sq-field-label">Shipping Method</span>
+                <span class="sq-field-value" id="cq-method"></span>
+              </div>
+              <div class="sq-field">
+                <span class="sq-field-label">Shipping Time</span>
+                <span class="sq-field-value" id="cq-time"></span>
+              </div>
+              <div class="sq-field">
+                <span class="sq-field-label">Buyer Will Pay</span>
+                <span class="sq-price" id="cq-price"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="add-quote-btn" onclick="openAqModal('add')">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="9.5" stroke="#666"/>
+            <line x1="10" y1="5.5" x2="10" y2="14.5" stroke="#666" stroke-width="1.4" stroke-linecap="round"/>
+            <line x1="5.5" y1="10" x2="14.5" y2="10" stroke="#666" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          Add Your Own Quote
+        </button>
+      </div>
+
+    </div><!-- /col-right -->
+
+  </div><!-- /two-col -->
+
+</div><!-- /panel -->
+
+<!-- ══════════════════════════════════════════
+     MODAL: Add Your Own Quote
+════════════════════════════════════════════ -->
+<div class="modal-overlay" id="aqOverlay" onclick="closeAqModal(event)">
+  <div class="modal-card" id="aqCard">
+    <button class="modal-close" onclick="closeAqModalDirect()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <line x1="1" y1="1" x2="15" y2="15" stroke="#222" stroke-width="2" stroke-linecap="round"/>
+        <line x1="15" y1="1" x2="1" y2="15" stroke="#222" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="modal-header">
+      <span class="modal-title">Add Your Own Quote</span>
+    </div>
+    <div class="modal-body">
+      <!-- Location -->
+      <div class="modal-field">
+        <span class="modal-label">Location</span>
+        <div class="modal-dd" id="aqLocDd">
+          <div class="modal-dd__trigger" onclick="toggleModalDd('aqLocDd')">
+            <span class="modal-dd__value placeholder" id="aqLocValue">Select location</span>
+            <svg class="modal-dd__chevron" width="14" height="8" viewBox="0 0 14 8" fill="none">
+              <path d="M1 1L7 7L13 1" stroke="#222" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="modal-dd__list">
+            <div class="modal-dd__item" onclick="selectModalDd('aqLocDd','aqLocValue','Canada')">Canada</div>
+            <div class="modal-dd__item" onclick="selectModalDd('aqLocDd','aqLocValue','United States')">United States</div>
+            <div class="modal-dd__item" onclick="selectModalDd('aqLocDd','aqLocValue','United Kingdom')">United Kingdom</div>
+            <div class="modal-dd__item" onclick="selectModalDd('aqLocDd','aqLocValue','Australia')">Australia</div>
+            <div class="modal-dd__item" onclick="selectModalDd('aqLocDd','aqLocValue','France')">France</div>
+            <div class="modal-dd__item" onclick="selectModalDd('aqLocDd','aqLocValue','Germany')">Germany</div>
+            <div class="modal-dd__item" onclick="selectModalDd('aqLocDd','aqLocValue','Italy')">Italy</div>
+          </div>
+        </div>
+      </div>
+      <!-- Shipping Method -->
+      <div class="modal-field">
+        <span class="modal-label">Shipping Method</span>
+        <div class="modal-dd" id="aqMethDd">
+          <div class="modal-dd__trigger" onclick="toggleModalDd('aqMethDd')">
+            <span class="modal-dd__value placeholder" id="aqMethValue">Select shipping method</span>
+            <svg class="modal-dd__chevron" width="14" height="8" viewBox="0 0 14 8" fill="none">
+              <path d="M1 1L7 7L13 1" stroke="#222" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="modal-dd__list">
+            <div class="modal-dd__item" onclick="selectModalDd('aqMethDd','aqMethValue','In-Home Shipping')">In-Home Shipping</div>
+            <div class="modal-dd__item" onclick="selectModalDd('aqMethDd','aqMethValue','Front Door Delivery')">Front Door Delivery</div>
+            <div class="modal-dd__item" onclick="selectModalDd('aqMethDd','aqMethValue','Ground Shipping')">Ground Shipping</div>
+            <div class="modal-dd__item" onclick="selectModalDd('aqMethDd','aqMethValue','Express Shipping')">Express Shipping</div>
+          </div>
+        </div>
+      </div>
+      <!-- Shipping Time -->
+      <div class="modal-field">
+        <span class="modal-label">Shipping Time</span>
+        <div class="modal-time-row">
+          <div class="modal-time-input">
+            <input type="number" id="aq-days-from" min="0" oninput="aqCheckSave()" />
+            <span class="modal-time-suffix">days</span>
+          </div>
+          <span class="modal-time-sep">to</span>
+          <div class="modal-time-input">
+            <input type="number" id="aq-days-to" min="0" oninput="aqCheckSave()" />
+            <span class="modal-time-suffix">days</span>
+          </div>
+        </div>
+      </div>
+      <!-- Buyers Will Pay -->
+      <div class="modal-field" style="padding-bottom:36px;">
+        <span class="modal-label">Buyers Will Pay</span>
+        <div class="modal-pay-wrap">
+          <span class="modal-pay-prefix">$</span>
+          <input type="number" class="modal-pay-input" id="aq-price" min="0" oninput="aqCheckSave()" />
+          <span class="modal-pay-suffix">USD</span>
+        </div>
+        <span class="modal-hint">Buyers will pay this flat rate that you set.</span>
+      </div>
+    </div>
+    <div class="modal-footer" id="aqFooter">
+      <div class="modal-cta-group">
+        <button class="modal-btn-cancel" onclick="closeAqModalDirect()">Cancel</button>
+        <button class="modal-btn-primary" id="aqSaveBtn" onclick="saveQuote()" disabled>Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL: Calculate Package Dimensions
+════════════════════════════════════════════ -->
+<div class="modal-overlay" id="calcOverlay" onclick="closeCalcModal(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeCalcModalDirect()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <line x1="1" y1="1" x2="15" y2="15" stroke="#222" stroke-width="2" stroke-linecap="round"/>
+        <line x1="15" y1="1" x2="1" y2="15" stroke="#222" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="modal-header">
+      <span class="modal-title">Calculate Package Dimensions</span>
+    </div>
+    <div class="modal-body">
+      <!-- Intro -->
+      <div class="modal-field" style="padding-bottom:0;">
+        <p style="font-size:14px;font-weight:300;color:#222;line-height:1.65;">We'll estimate your package dimensions from the item's dimensions, adding standard packaging allowance</p>
+      </div>
+      <!-- Item dims info box -->
+      <div class="modal-field" style="padding-bottom:0;">
+        <div class="modal-info-box">
+          <span class="modal-info-label">Item Dimensions (From Listing)</span>
+          <div class="modal-info-dims">
+            <div class="modal-info-dim">
+              <span class="modal-info-dim-label">Length</span>
+              <span class="modal-info-dim-val">42"</span>
+            </div>
+            <div class="modal-info-dim">
+              <span class="modal-info-dim-label">Width</span>
+              <span class="modal-info-dim-val">42"</span>
+            </div>
+            <div class="modal-info-dim">
+              <span class="modal-info-dim-label">Height</span>
+              <span class="modal-info-dim-val">42"</span>
+            </div>
+            <div class="modal-info-dim">
+              <span class="modal-info-dim-label">Weight</span>
+              <span class="modal-info-dim-val">42 lbs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- L/W/H -->
+      <div class="modal-field" style="padding-bottom:0;">
+        <div class="modal-dim-row">
+          <div class="modal-dim-field">
+            <span class="modal-dim-label">Length</span>
+            <div class="modal-dim-input-wrap">
+              <input type="number" class="modal-dim-input" id="calc-l" value="44" min="0" oninput="calcCheckApply()" />
+              <span class="modal-dim-suffix">in</span>
+            </div>
+          </div>
+          <div class="modal-dim-field">
+            <span class="modal-dim-label">Width</span>
+            <div class="modal-dim-input-wrap">
+              <input type="number" class="modal-dim-input" id="calc-w" value="44" min="0" oninput="calcCheckApply()" />
+              <span class="modal-dim-suffix">in</span>
+            </div>
+          </div>
+          <div class="modal-dim-field">
+            <span class="modal-dim-label">Height</span>
+            <div class="modal-dim-input-wrap">
+              <input type="number" class="modal-dim-input" id="calc-h" value="44" min="0" oninput="calcCheckApply()" />
+              <span class="modal-dim-suffix">in</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Weight -->
+      <div class="modal-field">
+        <div class="modal-weight-field">
+          <span class="modal-dim-label">Weight</span>
+          <div class="modal-dim-input-wrap">
+            <input type="number" class="modal-dim-input" id="calc-wt" value="44" min="0" oninput="calcCheckApply()" />
+            <span class="modal-dim-suffix">lbs</span>
+          </div>
+        </div>
+      </div>
+      <!-- Warning + checkbox -->
+      <div class="modal-field" style="padding-bottom:36px;">
+        <div class="modal-warn-box">
+          <p class="modal-warn-text">These are estimates only. Actual dimensions may differ. Using inaccurate measurements may result in unexpected carrier charges.</p>
+          <div class="modal-checkbox-row">
+            <div class="modal-checkbox-box" id="calcCheckbox" onclick="toggleCalcCheckbox()" style="background:#fff; border:1.5px solid #ccc;"></div>
+            <span class="modal-checkbox-text">I understand these are estimates and I'm responsible for verifying accuracy.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="modal-cta-group">
+        <button class="modal-btn-cancel" onclick="closeCalcModalDirect()">Cancel</button>
+        <button class="modal-btn-primary" id="calcApplyBtn" onclick="applyCalcDimensions()" disabled>Apply Dimensions</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Radio ──
+  function selectRadio(val) {
+    document.getElementById('opt-yes').classList.toggle('active', val === 'yes');
+    document.getElementById('opt-no').classList.toggle('active', val === 'no');
+    checkQuotes();
+  }
+
+  // ── Dimension inputs ──
+  let quoteTimer = null;
+  let wasAllFilled = false;
+
+  function onDimInput(el) {
+    el.classList.toggle('filled', parseFloat(el.value) > 0);
+    checkQuotes();
+  }
+
+  // ── Quote panel toggle with loading state ──
+  function checkQuotes() {
+    const ids1 = ['inp-l','inp-w','inp-h','inp-wt'];
+    const allFilled1 = ids1.every(id => (parseFloat(document.getElementById(id)?.value) || 0) > 0);
+
+    const pkg2Wrap   = document.getElementById('pkg2Wrap');
+    const pkg2Active = pkg2Wrap && pkg2Wrap.style.display === 'block';
+    const allFilled2 = pkg2Active && ['inp-l2','inp-w2','inp-h2','inp-wt2']
+      .every(id => (parseFloat(document.getElementById(id)?.value) || 0) > 0);
+
+    const lockEl     = document.getElementById('lockPanel');
+    const quotesEl   = document.getElementById('quotesPanel');
+    const errorEl    = document.getElementById('errorPanel');
+    const addQuoteEl = document.getElementById('addQuoteWrap');
+
+    if (!allFilled1) {
+      // Lock state
+      clearTimeout(quoteTimer);
+      wasAllFilled = false;
+      lockEl.style.display     = 'flex';
+      quotesEl.style.display   = 'none';
+      errorEl.style.display    = 'none';
+      addQuoteEl.style.display = 'none';
+      quotesEl.classList.remove('is-loading');
+    } else if (allFilled2) {
+      // Both packages fully filled → error state
+      clearTimeout(quoteTimer);
+      lockEl.style.display     = 'none';
+      quotesEl.style.display   = 'none';
+      errorEl.style.display    = 'flex';
+      addQuoteEl.style.display = 'block';
+      quotesEl.classList.remove('is-loading');
+    } else if (!wasAllFilled) {
+      // First fill of Package 1 → loading → quotes
+      wasAllFilled = true;
+      lockEl.style.display     = 'none';
+      quotesEl.style.display   = 'flex';
+      errorEl.style.display    = 'none';
+      addQuoteEl.style.display = 'none';
+      quotesEl.classList.add('is-loading');
+      clearTimeout(quoteTimer);
+      quoteTimer = setTimeout(() => {
+        quotesEl.classList.remove('is-loading');
+        addQuoteEl.style.display = 'block';
+      }, 1000);
+    } else {
+      // Package 1 still filled, Package 2 not fully filled — show quotes
+      lockEl.style.display     = 'none';
+      errorEl.style.display    = 'none';
+      quotesEl.style.display   = 'flex';
+      quotesEl.classList.remove('is-loading');
+      addQuoteEl.style.display = 'block';
+    }
+  }
+
+  // ── Custom dropdown (saved packages) – generic, works for Pkg 1 & 2 ──
+  const SAVED_PACKAGES = {
+    'Small (30 x 10 x 20 cm - 5 kg)':   { l: 12, w: 4,  h: 8,  wt: 11 },
+    'Medium (46 x 46 x 46 cm - 11 kg)': { l: 18, w: 18, h: 18, wt: 24 },
+    'Large (71 x 71 x 71 cm - 32 kg)':  { l: 28, w: 28, h: 28, wt: 71 },
+  };
+
+  function toggleDd(e) {
+    const ddEl = e.currentTarget.closest('.custom-dd');
+    const isOpen = ddEl.classList.contains('open');
+    document.querySelectorAll('.custom-dd.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) ddEl.classList.add('open');
+  }
+  function selectDd(val, itemEl) {
+    const ddEl = itemEl.closest('.custom-dd');
+    ddEl.querySelector('.custom-dd__value').textContent = val;
+    ddEl.classList.add('has-value');
+    ddEl.classList.remove('open');
+    ddEl.querySelectorAll('.custom-dd__item').forEach(el =>
+      el.classList.toggle('selected', el.textContent.trim() === val)
+    );
+    // Auto-fill dimension fields – detect which package by wrapper ID
+    const pkg = SAVED_PACKAGES[val];
+    if (pkg) {
+      const pkgWrap = ddEl.closest('.package-wrap');
+      const suffix = (pkgWrap && pkgWrap.id === 'pkg2Wrap') ? '2' : '';
+      ['l','w','h','wt'].forEach(k => {
+        const el = document.getElementById('inp-' + k + suffix);
+        if (el) { el.value = pkg[k]; el.classList.toggle('filled', pkg[k] > 0); }
+      });
+      checkQuotes();
+    }
+  }
+  function clearDd(e) {
+    e.stopPropagation();
+    const ddEl = e.currentTarget.closest('.custom-dd');
+    ddEl.querySelector('.custom-dd__value').textContent = '';
+    ddEl.classList.remove('has-value', 'open');
+    ddEl.querySelectorAll('.custom-dd__item').forEach(el => el.classList.remove('selected'));
+  }
+
+  // Close all custom dropdowns on outside click
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.custom-dd')) {
+      document.querySelectorAll('.custom-dd.open').forEach(el => el.classList.remove('open'));
+    }
+  });
+
+  // ── Add / Remove Package 2 ──
+  function addPackage() {
+    document.getElementById('pkg2Wrap').style.display = 'block';
+    document.getElementById('addPkgBtn').style.display = 'none';
+  }
+  function removePackage() {
+    document.getElementById('pkg2Wrap').style.display = 'none';
+    document.getElementById('addPkgBtn').style.display = '';
+    // Reset Package 2 inputs
+    ['inp-l2','inp-w2','inp-h2','inp-wt2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.value = 0; el.classList.remove('filled'); }
+    });
+    // Reset Package 2 dropdown
+    const dd2 = document.getElementById('savedPkgDd2');
+    if (dd2) {
+      dd2.querySelector('.custom-dd__value').textContent = '';
+      dd2.classList.remove('has-value','open');
+      dd2.querySelectorAll('.custom-dd__item').forEach(el => el.classList.remove('selected'));
+    }
+    checkQuotes();
+  }
+
+  // ── Modal custom dropdowns ──
+  let _aqLoc  = '';
+  let _aqMeth = '';
+
+  function toggleModalDd(ddId) {
+    const dd = document.getElementById(ddId);
+    const isOpen = dd.classList.contains('open');
+    // Close all modal dropdowns first
+    document.querySelectorAll('.modal-dd.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) dd.classList.add('open');
+  }
+  function selectModalDd(ddId, valueId, val) {
+    const dd = document.getElementById(ddId);
+    const span = document.getElementById(valueId);
+    span.textContent = val;
+    span.classList.remove('placeholder');
+    dd.classList.remove('open');
+    dd.querySelectorAll('.modal-dd__item').forEach(el =>
+      el.classList.toggle('selected', el.textContent.trim() === val)
+    );
+    if (ddId === 'aqLocDd')  _aqLoc  = val;
+    if (ddId === 'aqMethDd') _aqMeth = val;
+    aqCheckSave();
+  }
+  // Close modal dropdowns on outside click
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.modal-dd')) {
+      document.querySelectorAll('.modal-dd.open').forEach(el => el.classList.remove('open'));
+    }
+  });
+
+  // ── Meatball menu ──
+  function toggleMeatball(e) {
+    e.stopPropagation();
+    document.getElementById('cqMeatball').classList.toggle('open');
+  }
+  function closeMeatball() {
+    document.getElementById('cqMeatball').classList.remove('open');
+  }
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#cqMeatball')) closeMeatball();
+  });
+
+  // ── Add Your Own Quote modal ──
+  let aqMode = 'add';
+  let aqOriginal = {};
+
+  function openAqModal(mode) {
+    aqMode = mode || 'add';
+    const footer  = document.getElementById('aqFooter');
+    const saveBtn = document.getElementById('aqSaveBtn');
+    const ctaGroup = footer.querySelector('.modal-cta-group');
+
+    // Remove existing delete button if any
+    const existingDel = document.getElementById('aqDeleteBtn');
+    if (existingDel) existingDel.remove();
+    footer.classList.remove('has-delete');
+
+    if (aqMode === 'edit') {
+      saveBtn.textContent = 'Update';
+      footer.classList.add('has-delete');
+      const delBtn = document.createElement('button');
+      delBtn.id = 'aqDeleteBtn';
+      delBtn.className = 'modal-btn-delete';
+      delBtn.innerHTML = '<svg width="14" height="16" viewBox="0 0 14 16" fill="none"><path d="M1 3.5h12M4.5 3.5V2h5v1.5M2 3.5l.85 10.5h8.3L12 3.5" stroke="#222" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp; Delete';
+      delBtn.onclick = deleteQuote;
+      footer.insertBefore(delBtn, ctaGroup);
+      // Pre-fill from saved card
+      const loc   = document.getElementById('cq-location').textContent;
+      const meth  = document.getElementById('cq-method').textContent;
+      const time  = document.getElementById('cq-time').textContent;   // "1-3 days"
+      const price = document.getElementById('cq-price').textContent.replace('$','');
+      const parts = time.replace(' days','').split('-');
+      _setModalDd('aqLocDd',  'aqLocValue',  loc);
+      _setModalDd('aqMethDd', 'aqMethValue', meth);
+      document.getElementById('aq-days-from').value = parts[0] || '';
+      document.getElementById('aq-days-to').value   = parts[1] || '';
+      document.getElementById('aq-price').value     = price;
+      aqOriginal = { loc, meth, from: parts[0], to: parts[1], price };
+    } else {
+      saveBtn.textContent = 'Save';
+      _setModalDd('aqLocDd',  'aqLocValue',  '');
+      _setModalDd('aqMethDd', 'aqMethValue', '');
+      document.getElementById('aq-days-from').value = '';
+      document.getElementById('aq-days-to').value   = '';
+      document.getElementById('aq-price').value     = '';
+      aqOriginal = {};
+    }
+    aqCheckSave();
+    document.getElementById('aqOverlay').classList.add('open');
+  }
+
+  function _setModalDd(ddId, valueId, val) {
+    const span = document.getElementById(valueId);
+    if (val) {
+      span.textContent = val;
+      span.classList.remove('placeholder');
+      document.getElementById(ddId).querySelectorAll('.modal-dd__item').forEach(el =>
+        el.classList.toggle('selected', el.textContent.trim() === val)
+      );
+    } else {
+      span.textContent = ddId === 'aqLocDd' ? 'Select location' : 'Select shipping method';
+      span.classList.add('placeholder');
+      document.getElementById(ddId).querySelectorAll('.modal-dd__item').forEach(el =>
+        el.classList.remove('selected')
+      );
+    }
+    if (ddId === 'aqLocDd')  _aqLoc  = val;
+    if (ddId === 'aqMethDd') _aqMeth = val;
+  }
+
+  function closeAqModal(e) {
+    if (e.target === document.getElementById('aqOverlay')) closeAqModalDirect();
+  }
+  function closeAqModalDirect() {
+    document.getElementById('aqOverlay').classList.remove('open');
+  }
+
+  function aqCheckSave() {
+    const from  = document.getElementById('aq-days-from').value;
+    const to    = document.getElementById('aq-days-to').value;
+    const price = document.getElementById('aq-price').value;
+    const allFilled = _aqLoc && _aqMeth && from && to && price;
+    let enabled = false;
+    if (aqMode === 'add') {
+      enabled = !!allFilled;
+    } else {
+      // edit mode: enable only if something changed
+      const changed = _aqLoc  !== aqOriginal.loc   ||
+                      _aqMeth !== aqOriginal.meth   ||
+                      from    !== aqOriginal.from   ||
+                      to      !== aqOriginal.to     ||
+                      price   !== aqOriginal.price;
+      enabled = allFilled && changed;
+    }
+    document.getElementById('aqSaveBtn').disabled = !enabled;
+  }
+
+  function saveQuote() {
+    const from  = document.getElementById('aq-days-from').value;
+    const to    = document.getElementById('aq-days-to').value;
+    const price = document.getElementById('aq-price').value;
+    document.getElementById('cq-location').textContent = _aqLoc;
+    document.getElementById('cq-method').textContent   = _aqMeth;
+    document.getElementById('cq-time').textContent     = from + '–' + to + ' days';
+    document.getElementById('cq-price').textContent    = '$' + parseFloat(price).toFixed(2);
+    document.getElementById('customQuoteCard').style.display = 'flex';
+    closeAqModalDirect();
+  }
+
+  function deleteQuote() {
+    document.getElementById('customQuoteCard').style.display = 'none';
+    closeAqModalDirect();
+  }
+
+  // ── Calculate Package Dimensions modal ──
+  let calcChecked = false;
+
+  function openCalcModal() {
+    // Pre-fill: item dims (42") + 2" packing allowance; item weight (42 lbs) + 2 lbs
+    document.getElementById('calc-l').value  = 44;
+    document.getElementById('calc-w').value  = 44;
+    document.getElementById('calc-h').value  = 44;
+    document.getElementById('calc-wt').value = 44;
+    // Reset checkbox to unchecked
+    calcChecked = false;
+    const box = document.getElementById('calcCheckbox');
+    box.style.background = '#fff';
+    box.style.border = '1.5px solid #ccc';
+    box.innerHTML = '';
+    // Apply button disabled until checkbox checked
+    calcCheckApply();
+    document.getElementById('calcOverlay').classList.add('open');
+  }
+  function closeCalcModal(e) {
+    if (e.target === document.getElementById('calcOverlay')) closeCalcModalDirect();
+  }
+  function closeCalcModalDirect() {
+    document.getElementById('calcOverlay').classList.remove('open');
+  }
+  function toggleCalcCheckbox() {
+    calcChecked = !calcChecked;
+    const box = document.getElementById('calcCheckbox');
+    if (calcChecked) {
+      box.style.background = '#436b93';
+      box.style.border = 'none';
+      box.innerHTML = '<svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    } else {
+      box.style.background = '#fff';
+      box.style.border = '1.5px solid #ccc';
+      box.innerHTML = '';
+    }
+    calcCheckApply();
+  }
+  function calcCheckApply() {
+    const allFilled = ['calc-l','calc-w','calc-h','calc-wt']
+      .every(id => (parseFloat(document.getElementById(id)?.value) || 0) > 0);
+    document.getElementById('calcApplyBtn').disabled = !(allFilled && calcChecked);
+  }
+  function applyCalcDimensions() {
+    ['l','w','h','wt'].forEach(k => {
+      const src = document.getElementById('calc-' + k);
+      const dst = document.getElementById('inp-'  + k);
+      if (parseFloat(src.value) > 0) {
+        dst.value = src.value;
+        dst.classList.add('filled');
+      }
+    });
+    checkQuotes();
+    closeCalcModalDirect();
+  }
+</script>
+</body>
+</html>
