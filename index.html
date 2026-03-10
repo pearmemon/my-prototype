@@ -1487,6 +1487,11 @@
   function selectRadio(val) {
     document.getElementById('opt-yes').classList.toggle('active', val === 'yes');
     document.getElementById('opt-no').classList.toggle('active', val === 'no');
+    if (val === 'yes') {
+      document.getElementById('errorPanel').style.display   = 'none';
+      document.getElementById('addQuoteWrap').style.display = 'none';
+    }
+    checkQuotes();
   }
 
   // ─── Dim inputs ───
@@ -1599,6 +1604,20 @@
   function checkQuotes() {
     const ids1 = ['inp-l','inp-w','inp-h','inp-wt'];
     const allFilled1 = ids1.every(id => (parseFloat(document.getElementById(id)?.value) || 0) > 0);
+    const isNo = document.getElementById('opt-no').classList.contains('active');
+
+    if (isNo) {
+      if (allFilled1) {
+        clearTimeout(quoteTimer);
+        wasAllFilled = false;
+        document.getElementById('lockPanel').style.display    = 'none';
+        document.getElementById('quotesPanel').style.display  = 'none';
+        document.getElementById('errorPanel').style.display   = 'flex';
+        document.getElementById('addQuoteWrap').style.display = 'block';
+      }
+      // dims not yet filled — stay in lock state, do nothing
+      return;
+    }
 
     let anyExtraFilled = false;
     document.querySelectorAll('.package-wrap[data-pkg]').forEach(pkg => {
