@@ -261,6 +261,7 @@
       border-top: 1px solid #ddd;
     }
     .sq-region:first-child { border-top: none; padding-top: 0; }
+    .sq-region:last-child { padding-bottom: 0; }
     .sq-region-header { display: flex; align-items: center; gap: 9px; }
     .sq-region-name { font-size: 14px; font-weight: 400; color: #666; }
     .sq-field { display: flex; flex-direction: column; gap: 2px; }
@@ -733,7 +734,7 @@
         <p class="step-eyebrow">STEP 1</p>
         <p class="step-question">Are you able to pack the item yourself?</p>
         <div class="radio-row">
-          <div class="radio-opt active" id="opt-yes" onclick="selectRadio('yes')">
+          <div class="radio-opt" id="opt-yes" onclick="selectRadio('yes')">
             <div class="radio-circle"><div class="radio-dot"></div></div>Yes
           </div>
           <div class="radio-opt" id="opt-no" onclick="selectRadio('no')">
@@ -991,7 +992,7 @@
       </div>
 
       <!-- Add Your Own Quote -->
-      <div class="add-quote-wrap" id="addQuoteWrap">
+      <div class="add-quote-wrap" id="addQuoteWrap" style="display:block;">
         <div class="sq-card" id="customQuoteCard" style="display:none; margin-bottom:18px;">
           <div class="sq-regions">
             <div class="sq-region" style="border-top:none; padding-top:0;">
@@ -1388,79 +1389,40 @@
   </div>
 </div>
 
-<!-- ══ MODAL: Calculate Package Dimensions ══ -->
+<!-- ══ MODAL: Estimate Packing Dimensions ══ -->
 <div class="modal-overlay" id="calcOverlay" onclick="closeCalcModal(event)">
-  <div class="modal-card">
+  <div class="modal-card" style="width:480px;">
     <button class="modal-close" onclick="closeCalcModalDirect()">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M6.0625 15L5 13.9375L8.9375 10L5 6.0625L6.0625 5L10 8.9375L13.9375 5L15 6.0625L11.0625 10L15 13.9375L13.9375 15L10 11.0625L6.0625 15Z" fill="#222222"/></svg>
     </button>
-    <div class="modal-header">
-      <span class="modal-title">Calculate Package Dimensions</span>
+    <div class="modal-header" style="border-bottom:none;">
+      <span class="modal-title" style="font-family:'Cardinal Classic Short',serif; font-weight:400; font-size:20px; letter-spacing:-0.5px;">Estimate Packing Dimensions</span>
     </div>
-    <div class="modal-body">
-      <div class="modal-field" style="padding-bottom:0;">
-        <p style="font-size:14px;font-weight:300;color:#222;line-height:1.65;">We'll estimate your package dimensions from the item's dimensions, adding standard packaging allowance</p>
+    <div class="modal-body" style="padding: 0 36px 0;">
+      <!-- Warning box -->
+      <div style="display:flex; gap:10px; align-items:flex-start; background:#fff4e0; border-radius:5px; padding:18px; margin-bottom:18px;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0; margin-top:1px;">
+          <circle cx="10" cy="10" r="9" stroke="#b8860b" stroke-width="1.4"/>
+          <path d="M10 6v5" stroke="#b8860b" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="10" cy="13.5" r="0.8" fill="#b8860b"/>
+        </svg>
+        <p style="font-size:14px; font-weight:300; color:#222; line-height:1.5; margin:0;">Estimated packing dimensions are based on the entered item dimensions and weight. Please ensure your dimensions are accurate.</p>
       </div>
-      <div class="modal-field" style="padding-bottom:0;">
-        <div class="modal-info-box">
-          <span class="modal-info-label">Item Dimensions (From Listing)</span>
-          <div class="modal-info-dims">
-            <div class="modal-info-dim"><span class="modal-info-dim-label">Length</span><span class="modal-info-dim-val">42"</span></div>
-            <div class="modal-info-dim"><span class="modal-info-dim-label">Width</span><span class="modal-info-dim-val">42"</span></div>
-            <div class="modal-info-dim"><span class="modal-info-dim-label">Height</span><span class="modal-info-dim-val">42"</span></div>
-            <div class="modal-info-dim"><span class="modal-info-dim-label">Weight</span><span class="modal-info-dim-val">42 lbs</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-field" style="padding-bottom:0;">
-        <div class="modal-dim-row">
-          <div class="modal-dim-field">
-            <span class="modal-dim-label">Length</span>
-            <div class="modal-dim-input-wrap">
-              <input type="number" class="modal-dim-input" id="calc-l" value="44" min="0" oninput="calcCheckApply()" />
-              <span class="modal-dim-suffix">in</span>
-            </div>
-          </div>
-          <div class="modal-dim-field">
-            <span class="modal-dim-label">Width</span>
-            <div class="modal-dim-input-wrap">
-              <input type="number" class="modal-dim-input" id="calc-w" value="44" min="0" oninput="calcCheckApply()" />
-              <span class="modal-dim-suffix">in</span>
-            </div>
-          </div>
-          <div class="modal-dim-field">
-            <span class="modal-dim-label">Height</span>
-            <div class="modal-dim-input-wrap">
-              <input type="number" class="modal-dim-input" id="calc-h" value="44" min="0" oninput="calcCheckApply()" />
-              <span class="modal-dim-suffix">in</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-field">
-        <div class="modal-weight-field">
-          <span class="modal-dim-label">Weight</span>
-          <div class="modal-dim-input-wrap">
-            <input type="number" class="modal-dim-input" id="calc-wt" value="44" min="0" oninput="calcCheckApply()" />
-            <span class="modal-dim-suffix">lbs</span>
-          </div>
-        </div>
-      </div>
-      <div class="modal-field" style="padding-bottom:36px;">
-        <div class="modal-warn-box">
-          <p class="modal-warn-text">These are estimates only. Actual dimensions may differ. Using inaccurate measurements may result in unexpected carrier charges.</p>
-          <div class="modal-checkbox-row">
-            <div class="modal-checkbox-box" id="calcCheckbox" onclick="toggleCalcCheckbox()"></div>
-            <span class="modal-checkbox-text">I understand these are estimates and I'm responsible for verifying accuracy.</span>
-          </div>
-        </div>
+      <!-- Checkbox -->
+      <div style="display:flex; align-items:flex-start; gap:18px; margin-bottom:28px;">
+        <div id="calcCheckbox" onclick="toggleCalcCheckbox()" style="width:20px; height:20px; border:1.5px solid #ccc; border-radius:3px; background:#fff; flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; margin-top:2px;"></div>
+        <p style="font-size:16px; font-weight:300; color:#222; line-height:1.5; margin:0;">I understand that by not providing packing dimensions, the final shipping cost may be inaccurate and reduce the chance of a sale.</p>
       </div>
     </div>
-    <div class="modal-footer">
-      <div class="modal-cta-group">
-        <button class="modal-btn-cancel" onclick="closeCalcModalDirect()">Cancel</button>
-        <button class="modal-btn-primary" id="calcApplyBtn" onclick="applyCalcDimensions()" disabled>Apply Dimensions</button>
-      </div>
+    <div style="padding: 0 36px 36px; display:flex; flex-direction:column; gap:9px;">
+      <button id="calcApplyBtn" onclick="applyCalcDimensions()" disabled
+        style="width:100%; height:50px; border:none; border-radius:0; background:#b0b8c4; color:#fff; font-family:inherit; font-size:16px; font-weight:300; letter-spacing:1px; text-transform:uppercase; cursor:not-allowed;">
+        USE APPROXIMATE DIMENSIONS
+      </button>
+      <button onclick="closeCalcModalDirect()"
+        style="width:100%; height:50px; border:2px solid #222; border-radius:0; background:#fff; color:#222; font-family:inherit; font-size:16px; font-weight:300; letter-spacing:1px; text-transform:uppercase; cursor:pointer;">
+        CANCEL
+      </button>
     </div>
   </div>
 </div>
@@ -1488,8 +1450,7 @@
     document.getElementById('opt-yes').classList.toggle('active', val === 'yes');
     document.getElementById('opt-no').classList.toggle('active', val === 'no');
     if (val === 'yes') {
-      document.getElementById('errorPanel').style.display   = 'none';
-      document.getElementById('addQuoteWrap').style.display = 'none';
+      document.getElementById('errorPanel').style.display = 'none';
     }
     checkQuotes();
   }
@@ -1498,9 +1459,21 @@
   let quoteTimer  = null;
   let wasAllFilled = false;
 
+  let priceRefreshTimer = null;
   function onDimInput(el) {
     el.classList.toggle('filled', parseFloat(el.value) > 0);
-    checkQuotes();
+    // If quotes are already showing, re-trigger loading state on price fields
+    const quotesEl = document.getElementById('quotesPanel');
+    if (quotesEl && quotesEl.style.display !== 'none') {
+      quotesEl.classList.add('is-loading');
+      clearTimeout(priceRefreshTimer);
+      priceRefreshTimer = setTimeout(() => {
+        quotesEl.classList.remove('is-loading');
+        updateQuotePrices();
+      }, 800);
+    } else {
+      checkQuotes();
+    }
   }
 
   // ─── Quote pricing (origin-aware) ───
@@ -1627,45 +1600,39 @@
       if (filled) anyExtraFilled = true;
     });
 
-    const lockEl     = document.getElementById('lockPanel');
-    const quotesEl   = document.getElementById('quotesPanel');
-    const errorEl    = document.getElementById('errorPanel');
-    const addQuoteEl = document.getElementById('addQuoteWrap');
+    const lockEl   = document.getElementById('lockPanel');
+    const quotesEl = document.getElementById('quotesPanel');
+    const errorEl  = document.getElementById('errorPanel');
 
     if (!allFilled1) {
       clearTimeout(quoteTimer);
       wasAllFilled = false;
-      lockEl.style.display     = 'flex';
-      quotesEl.style.display   = 'none';
-      errorEl.style.display    = 'none';
-      addQuoteEl.style.display = 'none';
+      lockEl.style.display   = 'flex';
+      quotesEl.style.display = 'none';
+      errorEl.style.display  = 'none';
       quotesEl.classList.remove('is-loading');
     } else if (anyExtraFilled) {
       clearTimeout(quoteTimer);
-      lockEl.style.display     = 'none';
-      quotesEl.style.display   = 'none';
-      errorEl.style.display    = 'flex';
-      addQuoteEl.style.display = 'block';
+      lockEl.style.display   = 'none';
+      quotesEl.style.display = 'none';
+      errorEl.style.display  = 'flex';
       quotesEl.classList.remove('is-loading');
     } else if (!wasAllFilled) {
       wasAllFilled = true;
-      lockEl.style.display     = 'none';
-      quotesEl.style.display   = 'flex';
-      errorEl.style.display    = 'none';
-      addQuoteEl.style.display = 'none';
+      lockEl.style.display   = 'none';
+      quotesEl.style.display = 'flex';
+      errorEl.style.display  = 'none';
       quotesEl.classList.add('is-loading');
       clearTimeout(quoteTimer);
       quoteTimer = setTimeout(() => {
         quotesEl.classList.remove('is-loading');
-        addQuoteEl.style.display = 'block';
         updateQuotePrices();
       }, 1000);
     } else {
-      lockEl.style.display     = 'none';
-      errorEl.style.display    = 'none';
-      quotesEl.style.display   = 'flex';
+      lockEl.style.display   = 'none';
+      errorEl.style.display  = 'none';
+      quotesEl.style.display = 'flex';
       quotesEl.classList.remove('is-loading');
-      addQuoteEl.style.display = 'block';
       updateQuotePrices();
     }
   }
@@ -1698,9 +1665,27 @@
       if (pkgWrap && pkgWrap.dataset.pkg) suffix = '-' + pkgWrap.dataset.pkg;
       ['l','w','h','wt'].forEach(k => {
         const el = document.getElementById('inp-' + k + suffix);
-        if (el) { el.value = pkg[k]; el.classList.toggle('filled', pkg[k] > 0); }
+        if (el) {
+          el.value = pkg[k];
+          el.classList.toggle('filled', pkg[k] > 0);
+          el.disabled = true;
+          el.style.background = '#f5f5f5';
+          el.style.color = '#aaa';
+          el.style.cursor = 'not-allowed';
+        }
       });
-      checkQuotes();
+      // Trigger loading state if quotes already visible
+      const quotesEl = document.getElementById('quotesPanel');
+      if (quotesEl && quotesEl.style.display !== 'none') {
+        quotesEl.classList.add('is-loading');
+        clearTimeout(priceRefreshTimer);
+        priceRefreshTimer = setTimeout(() => {
+          quotesEl.classList.remove('is-loading');
+          updateQuotePrices();
+        }, 800);
+      } else {
+        checkQuotes();
+      }
     }
   }
   function clearDd(e) {
@@ -1709,6 +1694,19 @@
     ddEl.querySelector('.custom-dd__value').textContent = '';
     ddEl.classList.remove('has-value', 'open');
     ddEl.querySelectorAll('.custom-dd__item').forEach(el => el.classList.remove('selected'));
+    // Re-enable dim inputs but keep values
+    const pkgWrap = ddEl.closest('.package-wrap');
+    let suffix = '';
+    if (pkgWrap && pkgWrap.dataset.pkg) suffix = '-' + pkgWrap.dataset.pkg;
+    ['l','w','h','wt'].forEach(k => {
+      const el = document.getElementById('inp-' + k + suffix);
+      if (el) {
+        el.disabled = false;
+        el.style.background = '';
+        el.style.color = '';
+        el.style.cursor = '';
+      }
+    });
   }
   function selectHandlingTimeDd(val, itemEl) {
     const ddEl = itemEl.closest('.custom-dd');
@@ -1780,6 +1778,8 @@
     document.querySelectorAll('.package-wrap').forEach((pkg, i) => {
       const label = pkg.querySelector('.pkg-label');
       if (label) label.textContent = 'Package ' + (i + 1);
+      // Keep data-pkg in sync so dim input IDs resolve correctly
+      if (pkg.dataset.pkg) pkg.dataset.pkg = i + 1;
     });
   }
 
@@ -2255,17 +2255,14 @@
     closeAqModalDirect();
   }
 
-  // ─── Calculate Package Dimensions modal ───
+  // ─── Estimate Packing Dimensions modal ───
   let calcChecked = false;
   function openCalcModal() {
-    document.getElementById('calc-l').value  = 44;
-    document.getElementById('calc-w').value  = 44;
-    document.getElementById('calc-h').value  = 44;
-    document.getElementById('calc-wt').value = 44;
     calcChecked = false;
     const box = document.getElementById('calcCheckbox');
     box.style.background = '#fff'; box.style.border = '1.5px solid #ccc'; box.innerHTML = '';
-    calcCheckApply();
+    const btn = document.getElementById('calcApplyBtn');
+    btn.disabled = true; btn.style.background = '#b0b8c4'; btn.style.cursor = 'not-allowed';
     document.getElementById('calcOverlay').classList.add('open');
   }
   function closeCalcModal(e) { if (e.target === document.getElementById('calcOverlay')) closeCalcModalDirect(); }
@@ -2273,24 +2270,22 @@
   function toggleCalcCheckbox() {
     calcChecked = !calcChecked;
     const box = document.getElementById('calcCheckbox');
+    const btn = document.getElementById('calcApplyBtn');
     if (calcChecked) {
       box.style.background = '#436b93'; box.style.border = 'none';
       box.innerHTML = '<svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5L4.5 8L11 1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      btn.disabled = false; btn.style.background = '#436b93'; btn.style.cursor = 'pointer';
     } else {
       box.style.background = '#fff'; box.style.border = '1.5px solid #ccc'; box.innerHTML = '';
+      btn.disabled = true; btn.style.background = '#b0b8c4'; btn.style.cursor = 'not-allowed';
     }
-    calcCheckApply();
-  }
-  function calcCheckApply() {
-    const allFilled = ['calc-l','calc-w','calc-h','calc-wt']
-      .every(id => (parseFloat(document.getElementById(id)?.value) || 0) > 0);
-    document.getElementById('calcApplyBtn').disabled = !(allFilled && calcChecked);
   }
   function applyCalcDimensions() {
+    // Fill with estimated dims (item dims + standard packaging allowance)
+    const approx = { l: 44, w: 44, h: 44, wt: 44 };
     ['l','w','h','wt'].forEach(k => {
-      const src = document.getElementById('calc-' + k);
-      const dst = document.getElementById('inp-'  + k);
-      if (src && dst && parseFloat(src.value) > 0) { dst.value = src.value; dst.classList.add('filled'); }
+      const dst = document.getElementById('inp-' + k);
+      if (dst) { dst.value = approx[k]; dst.classList.add('filled'); }
     });
     checkQuotes();
     closeCalcModalDirect();
